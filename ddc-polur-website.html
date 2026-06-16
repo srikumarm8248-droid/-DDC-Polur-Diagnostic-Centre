@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DDC Polur | Doctor Diagnostic Centre & RR Clinic</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0a1628;
+      --secondary: #112240;
+      --accent: #00b4d8;
+      --accent2: #0077b6;
+      --gold: #c9a84c;
+      --white: #ffffff;
+      --light: #e8f4f8;
+      --text: #ccd6f6;
+      --text-muted: #8892b0;
+      --card-bg: rgba(17, 34, 64, 0.85);
+      --glow: rgba(0, 180, 216, 0.3);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--primary);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ─── CANVAS 3D BG ─── */
+    #bgCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 20px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.4s ease;
+      background: transparent;
+    }
+    nav.scrolled {
+      background: rgba(10, 22, 40, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 14px 5%;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+      border-bottom: 1px solid rgba(0, 180, 216, 0.15);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 20px var(--glow);
+    }
+    .nav-logo-text {
+      display: flex; flex-direction: column;
+      line-height: 1.1;
+    }
+    .nav-logo-text span:first-child {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px; font-weight: 700;
+      color: var(--white);
+      letter-spacing: 1px;
+    }
+    .nav-logo-text span:last-child {
+      font-size: 10px; font-weight: 400;
+      color: var(--accent);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex; gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 14px; font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: color 0.3s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: var(--white) !important;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: 600 !important;
+      transition: all 0.3s !important;
+      box-shadow: 0 4px 15px var(--glow);
+    }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--glow) !important; }
+    .nav-cta::after { display: none !important; }
+    .hamburger {
+      display: none;
+      flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 5px;
+    }
+    .hamburger span {
+      width: 24px; height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 5% 80px;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(0,180,216,0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulse 4s ease-in-out infinite;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -100px; left: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0,119,182,0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulse 6s ease-in-out infinite reverse;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.1); opacity: 1; }
+    }
+    .hero-content {
+      max-width: 680px;
+      z-index: 2;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center; gap: 8px;
+      background: rgba(0,180,216,0.1);
+      border: 1px solid rgba(0,180,216,0.3);
+      color: var(--accent);
+      padding: 8px 18px;
+      border-radius: 100px;
+      font-size: 13px; font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero-badge i { font-size: 10px; }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(42px, 6vw, 80px);
+      font-weight: 600;
+      line-height: 1.1;
+      color: var(--white);
+      margin-bottom: 24px;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent), #90e0ef);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 18px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 520px;
+    }
+    .hero-btns {
+      display: flex; gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: var(--white);
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 15px; font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+      box-shadow: 0 8px 30px rgba(0,180,216,0.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(0,180,216,0.5);
+    }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: transparent;
+      color: var(--white);
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 15px; font-weight: 600;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: all 0.3s;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-3px);
+    }
+    .hero-stats {
+      display: flex; gap: 40px;
+      margin-top: 56px;
+      padding-top: 40px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px; font-weight: 700;
+      color: var(--white);
+      display: block;
+    }
+    .stat-num span { color: var(--accent); }
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 4px;
+    }
+    .hero-visual {
+      position: absolute;
+      right: 5%; top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+    }
+    .hero-card-3d {
+      width: 340px;
+      background: var(--card-bg);
+      border: 1px solid rgba(0,180,216,0.2);
+      border-radius: 24px;
+      padding: 32px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(0,180,216,0.08);
+      transform: perspective(1000px) rotateY(-8deg) rotateX(4deg);
+      transition: transform 0.5s ease;
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: perspective(1000px) rotateY(-8deg) rotateX(4deg) translateY(0); }
+      50% { transform: perspective(1000px) rotateY(-8deg) rotateX(4deg) translateY(-15px); }
+    }
+    .hero-card-3d:hover {
+      transform: perspective(1000px) rotateY(-4deg) rotateX(2deg) translateY(-10px) !important;
+      animation: none;
+    }
+    .hc-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .hc-icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 8px 20px var(--glow);
+    }
+    .hc-title { font-size: 18px; font-weight: 600; color: var(--white); }
+    .hc-sub { font-size: 12px; color: var(--accent); margin-top: 2px; }
+    .hc-items { display: flex; flex-direction: column; gap: 14px; }
+    .hc-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .hc-item i {
+      color: var(--accent);
+      width: 16px; text-align: center;
+      font-size: 14px;
+    }
+    .hc-item span { font-size: 13px; color: var(--text); }
+    .hc-badge {
+      margin-top: 20px;
+      background: linear-gradient(135deg, rgba(0,180,216,0.15), rgba(0,119,182,0.15));
+      border: 1px solid rgba(0,180,216,0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      text-align: center;
+    }
+    .hc-badge p { font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 1px; }
+
+    /* ─── SECTION BASE ─── */
+    section { position: relative; z-index: 1; }
+    .section-inner { max-width: 1200px; margin: 0 auto; padding: 100px 5%; }
+    .section-label {
+      display: inline-block;
+      font-size: 12px; font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .section-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 560px;
+    }
+
+    /* ─── SERVICES ─── */
+    #services { background: rgba(0,0,0,0.2); }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 56px;
+    }
+    .service-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 36px 32px;
+      backdrop-filter: blur(10px);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .service-card:hover {
+      border-color: rgba(0,180,216,0.3);
+      transform: translateY(-8px);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3), 0 0 40px rgba(0,180,216,0.08);
+    }
+    .service-card:hover::before { opacity: 1; }
+    .service-icon {
+      width: 60px; height: 60px;
+      background: linear-gradient(135deg, rgba(0,180,216,0.15), rgba(0,119,182,0.15));
+      border: 1px solid rgba(0,180,216,0.25);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      color: var(--accent);
+      margin-bottom: 24px;
+      transition: all 0.4s;
+    }
+    .service-card:hover .service-icon {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: var(--white);
+      box-shadow: 0 12px 30px var(--glow);
+      border-color: transparent;
+    }
+    .service-card h3 {
+      font-size: 20px; font-weight: 600;
+      color: var(--white);
+      margin-bottom: 12px;
+    }
+    .service-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .service-tag {
+      display: inline-block;
+      margin-top: 20px;
+      background: rgba(0,180,216,0.1);
+      border: 1px solid rgba(0,180,216,0.2);
+      color: var(--accent);
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 12px; font-weight: 600;
+    }
+
+    /* ─── DOCTORS ─── */
+    .doctors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 32px;
+      margin-top: 56px;
+    }
+    .doctor-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 24px;
+      padding: 40px 36px;
+      backdrop-filter: blur(10px);
+      transition: all 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+    .doctor-card::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; right: -80px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(0,180,216,0.06) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .doctor-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0,180,216,0.25);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+    }
+    .doctor-avatar {
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 12px 30px var(--glow);
+    }
+    .doctor-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 600;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .doctor-deg {
+      font-size: 13px;
+      color: var(--accent);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    .doctor-timing {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(0,180,216,0.08);
+      border: 1px solid rgba(0,180,216,0.2);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .doctor-timing i { color: var(--accent); font-size: 14px; }
+    .doctor-timing span { font-size: 14px; color: var(--text); }
+    .doctor-spec {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .doctor-spec p { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+    .spec-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .spec-tag {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    /* ─── WHY US ─── */
+    #why { background: rgba(0,0,0,0.15); }
+    .why-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      margin-top: 0;
+    }
+    .why-features { display: flex; flex-direction: column; gap: 24px; }
+    .why-item {
+      display: flex; gap: 20px;
+      align-items: flex-start;
+      padding: 24px;
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      transition: all 0.3s;
+    }
+    .why-item:hover {
+      border-color: rgba(0,180,216,0.25);
+      transform: translateX(8px);
+    }
+    .why-item-icon {
+      width: 48px; height: 48px;
+      min-width: 48px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 8px 20px var(--glow);
+    }
+    .why-item h4 {
+      font-size: 16px; font-weight: 600;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+    .why-item p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .why-visual {
+      position: relative;
+    }
+    .why-big-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(0,180,216,0.2);
+      border-radius: 24px;
+      padding: 40px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.4), 0 0 60px rgba(0,180,216,0.06);
+      transform: perspective(800px) rotateY(5deg);
+    }
+    .cmcbadge {
+      background: linear-gradient(135deg, var(--gold), #e8c970);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .cmcbadge i { font-size: 36px; color: var(--primary); margin-bottom: 8px; }
+    .cmcbadge h4 { font-size: 16px; font-weight: 700; color: var(--primary); }
+    .cmcbadge p { font-size: 12px; color: rgba(10,22,40,0.7); margin-top: 4px; }
+    .pkg-box {
+      background: rgba(0,180,216,0.08);
+      border: 1px solid rgba(0,180,216,0.2);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .pkg-box h4 {
+      font-size: 15px; font-weight: 600;
+      color: var(--white); margin-bottom: 16px;
+    }
+    .pkg-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 40px; font-weight: 700;
+      color: var(--accent);
+    }
+    .pkg-price span { font-size: 16px; color: var(--text-muted); }
+    .pkg-features { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+    .pkg-feat {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--text);
+    }
+    .pkg-feat i { color: var(--accent); font-size: 12px; }
+
+    /* ─── DIABETIC CARE ─── */
+    .diabetic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 56px;
+    }
+    .dc-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+    .dc-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,180,216,0.04), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .dc-card:hover { transform: translateY(-8px); border-color: rgba(0,180,216,0.25); }
+    .dc-card:hover::before { opacity: 1; }
+    .dc-icon {
+      font-size: 36px;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .dc-card h4 { font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 10px; }
+    .dc-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ─── TESTIMONIALS ─── */
+    #testimonials { background: rgba(0,0,0,0.2); }
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 56px;
+    }
+    .test-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 32px;
+      transition: all 0.4s;
+    }
+    .test-card:hover {
+      border-color: rgba(0,180,216,0.2);
+      transform: translateY(-4px);
+    }
+    .stars { color: var(--gold); font-size: 14px; margin-bottom: 16px; }
+    .test-card p {
+      font-size: 14px; color: var(--text);
+      line-height: 1.7;
+      font-style: italic;
+      margin-bottom: 24px;
+    }
+    .test-author { display: flex; align-items: center; gap: 12px; }
+    .test-av {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700;
+      color: var(--white);
+    }
+    .test-name { font-size: 15px; font-weight: 600; color: var(--white); }
+    .test-loc { font-size: 12px; color: var(--text-muted); }
+
+    /* ─── CONTACT ─── */
+    #contact { background: rgba(0,0,0,0.15); }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      margin-top: 56px;
+    }
+    .contact-info { display: flex; flex-direction: column; gap: 24px; }
+    .contact-card {
+      display: flex; gap: 16px; align-items: flex-start;
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s;
+    }
+    .contact-card:hover { border-color: rgba(0,180,216,0.25); transform: translateX(6px); }
+    .contact-card-icon {
+      width: 44px; height: 44px; min-width: 44px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 6px 16px var(--glow);
+    }
+    .contact-card h4 { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+    .contact-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .contact-card a { color: var(--accent); text-decoration: none; }
+    .map-container {
+      background: var(--card-bg);
+      border: 1px solid rgba(0,180,216,0.2);
+      border-radius: 20px;
+      overflow: hidden;
+      height: 380px;
+    }
+    .map-container iframe { width: 100%; height: 100%; border: none; filter: brightness(0.85) contrast(1.1); }
+    .cta-band {
+      background: linear-gradient(135deg, rgba(0,180,216,0.12), rgba(0,119,182,0.12));
+      border: 1px solid rgba(0,180,216,0.2);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      margin-top: 60px;
+    }
+    .cta-band h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px; color: var(--white);
+      margin-bottom: 12px;
+    }
+    .cta-band p { color: var(--text-muted); margin-bottom: 28px; }
+    .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-call {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: #25D366;
+      color: var(--white);
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 15px; font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .btn-call:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(37,211,102,0.4); }
+    .btn-phone {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: var(--white);
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 15px; font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .btn-phone:hover { transform: translateY(-3px); box-shadow: 0 12px 30px var(--glow); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: rgba(0,0,0,0.4);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 60px 5% 30px;
+      position: relative; z-index: 1;
+    }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 40px; flex-wrap: wrap;
+      margin-bottom: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-brand p {
+      font-size: 13px; color: var(--text-muted);
+      line-height: 1.7; max-width: 280px;
+      margin-top: 12px;
+    }
+    .footer-links h5 {
+      font-size: 13px; font-weight: 600;
+      color: var(--white);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .footer-links ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a {
+      font-size: 13px; color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-bottom p { font-size: 12px; color: var(--text-muted); }
+    .footer-bottom span { color: var(--accent); }
+
+    /* ─── ANIMATIONS ─── */
+    .animate {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .animate.visible { opacity: 1; transform: translateY(0); }
+    .animate-left { opacity: 0; transform: translateX(-30px); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+    .animate-left.visible { opacity: 1; transform: translateX(0); }
+    .animate-right { opacity: 0; transform: translateX(30px); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+    .animate-right.visible { opacity: 1; transform: translateX(0); }
+    .delay-1 { transition-delay: 0.1s !important; }
+    .delay-2 { transition-delay: 0.2s !important; }
+    .delay-3 { transition-delay: 0.3s !important; }
+    .delay-4 { transition-delay: 0.4s !important; }
+    .delay-5 { transition-delay: 0.5s !important; }
+
+    /* ─── MOBILE MENU ─── */
+    @media (max-width: 768px) {
+      .nav-links {
+        position: fixed;
+        top: 0; right: -100%;
+        width: 280px; height: 100vh;
+        background: rgba(10,22,40,0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 100px 40px 40px;
+        gap: 28px;
+        transition: right 0.4s ease;
+        border-left: 1px solid rgba(0,180,216,0.15);
+      }
+      .nav-links.open { right: 0; }
+      .nav-links a { font-size: 16px; }
+      .hamburger { display: flex; }
+      .hero { flex-direction: column; padding: 100px 5% 60px; }
+      .hero-visual { position: relative; right: auto; top: auto; transform: none; margin-top: 40px; }
+      .hero-card-3d { width: 100%; transform: none; animation: none; }
+      .hero-stats { gap: 24px; }
+      .why-grid { grid-template-columns: 1fr; }
+      .why-visual { order: -1; }
+      .why-big-card { transform: none; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .footer-top { flex-direction: column; }
+    }
+    @media (max-width: 480px) {
+      .hero-stats { flex-wrap: wrap; gap: 20px; }
+      .stat { min-width: 80px; }
+    }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--primary); }
+    ::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- 3D Background Canvas -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- ─── NAVBAR ─── -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">🏥</div>
+    <div class="nav-logo-text">
+      <span>DDC Polur</span>
+      <span>Diagnostic Centre</span>
+    </div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#doctors">Doctors</a></li>
+    <li><a href="#diabetic">Diabetic Care</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#contact" class="nav-cta">Book Now</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero" id="home">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <i class="fas fa-circle"></i>
+      CMC Enrolled Quality Lab
+    </div>
+    <h1>Results You Can <span>Trust.</span><br>Care You Can Feel.</h1>
+    <p>Doctor Diagnostic Centre & RR Clinic — Polur's most trusted fully computerized lab with expert doctor consultations and specialized diabetic care.</p>
+    <div class="hero-btns">
+      <a href="tel:+919500765006" class="btn-primary">
+        <i class="fas fa-phone"></i> Call Now: 95007 65006
+      </a>
+      <a href="#services" class="btn-secondary">
+        <i class="fas fa-flask"></i> Our Services
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">10<span>+</span></span>
+        <div class="stat-label">Years Serving</div>
+      </div>
+      <div class="stat">
+        <span class="stat-num">5000<span>+</span></span>
+        <div class="stat-label">Patients Trusted</div>
+      </div>
+      <div class="stat">
+        <span class="stat-num">2<span></span></span>
+        <div class="stat-label">Expert Doctors</div>
+      </div>
+      <div class="stat">
+        <span class="stat-num">24<span>h</span></span>
+        <div class="stat-label">Home Collection</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-card-3d">
+      <div class="hc-header">
+        <div class="hc-icon">🔬</div>
+        <div>
+          <div class="hc-title">Full Body Check-up</div>
+          <div class="hc-sub">Comprehensive Package</div>
+        </div>
+      </div>
+      <div class="hc-items">
+        <div class="hc-item"><i class="fas fa-heartbeat"></i><span>ECG — 12 Channel</span></div>
+        <div class="hc-item"><i class="fas fa-tint"></i><span>Complete Blood Count</span></div>
+        <div class="hc-item"><i class="fas fa-microscope"></i><span>Biothesiometry Test</span></div>
+        <div class="hc-item"><i class="fas fa-chart-line"></i><span>Blood Glucose Profile</span></div>
+        <div class="hc-item"><i class="fas fa-home"></i><span>Home Collection Available</span></div>
+      </div>
+      <div class="hc-badge">
+        <p>⭐ Starting at just ₹1,800</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SERVICES ─── -->
+<section id="services">
+  <div class="section-inner">
+    <div class="animate">
+      <span class="section-label">What We Offer</span>
+      <h2 class="section-title">Comprehensive Diagnostic<br>& Clinical Services</h2>
+      <p class="section-desc">From routine blood tests to advanced diagnostics — all under one roof with CMC-enrolled quality assurance.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card animate delay-1">
+        <div class="service-icon"><i class="fas fa-flask"></i></div>
+        <h3>Computerized Lab Tests</h3>
+        <p>Fully computerized clinical laboratory with advanced equipment ensuring precise, reliable results for all blood and urine tests.</p>
+        <span class="service-tag">Walk-in Available</span>
+      </div>
+      <div class="service-card animate delay-2">
+        <div class="service-icon"><i class="fas fa-heartbeat"></i></div>
+        <h3>ECG — 12 Channel</h3>
+        <p>State-of-the-art 12-channel ECG for complete cardiac analysis. Quick results with detailed reports by our experienced team.</p>
+        <span class="service-tag">Same Day Report</span>
+      </div>
+      <div class="service-card animate delay-3">
+        <div class="service-icon"><i class="fas fa-microscope"></i></div>
+        <h3>Biothesiometry</h3>
+        <p>Specialized study of loss of sensation in the foot — critical diagnostic tool for early detection of diabetic neuropathy.</p>
+        <span class="service-tag">Diabetic Specialist</span>
+      </div>
+      <div class="service-card animate delay-1">
+        <div class="service-icon"><i class="fas fa-user-md"></i></div>
+        <h3>Doctor Consultation</h3>
+        <p>Expert consultations at RR Clinic with qualified MBBS doctors. Morning and evening slots available for your convenience.</p>
+        <span class="service-tag">Morning & Evening</span>
+      </div>
+      <div class="service-card animate delay-2">
+        <div class="service-icon"><i class="fas fa-shield-virus"></i></div>
+        <h3>Full Body Check-up</h3>
+        <p>Comprehensive health packages starting at ₹1,800. Includes blood profile, sugar, cholesterol, ECG and doctor review.</p>
+        <span class="service-tag">From ₹1,800</span>
+      </div>
+      <div class="service-card animate delay-3">
+        <div class="service-icon"><i class="fas fa-home"></i></div>
+        <h3>Home Collection</h3>
+        <p>Convenient blood sample collection at your doorstep. Our trained staff comes to you — no travel needed for lab tests.</p>
+        <span class="service-tag">Book by Call</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── DOCTORS ─── -->
+<section id="doctors">
+  <div class="section-inner">
+    <div class="animate">
+      <span class="section-label">Our Specialists</span>
+      <h2 class="section-title">Meet Your<br>Trusted Doctors</h2>
+      <p class="section-desc">Qualified, experienced, and compassionate doctors at RR Clinic ready to serve the Polur community.</p>
+    </div>
+    <div class="doctors-grid">
+      <div class="doctor-card animate-left">
+        <div class="doctor-avatar">👩‍⚕️</div>
+        <h3>Dr. Rashmitha R</h3>
+        <div class="doctor-deg">MBBS, GVMCH Vellore</div>
+        <div class="doctor-timing">
+          <i class="fas fa-sun"></i>
+          <span>Morning Session: 08:00 AM – 02:00 PM</span>
+        </div>
+        <div class="doctor-spec">
+          <p>Specializations</p>
+          <div class="spec-tags">
+            <span class="spec-tag">General Medicine</span>
+            <span class="spec-tag">Primary Care</span>
+            <span class="spec-tag">Clinical Diagnostics</span>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card animate-right">
+        <div class="doctor-avatar">👩‍⚕️</div>
+        <h3>Dr. Vinodhini R</h3>
+        <div class="doctor-deg">MBBS, MD (Pathology)<br>PGDFM, D.Fellowship in Diabetes — CMC Vellore</div>
+        <div class="doctor-timing">
+          <i class="fas fa-moon"></i>
+          <span>Evening Session: 05:00 PM – 09:00 PM</span>
+        </div>
+        <div class="doctor-spec">
+          <p>Specializations</p>
+          <div class="spec-tags">
+            <span class="spec-tag">Diabetes Management</span>
+            <span class="spec-tag">Pathology</span>
+            <span class="spec-tag">Foot Care</span>
+            <span class="spec-tag">CMC Trained</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── DIABETIC CARE ─── -->
+<section id="diabetic" style="background: rgba(0,0,0,0.15);">
+  <div class="section-inner">
+    <div class="animate">
+      <span class="section-label">Specialized Programme</span>
+      <h2 class="section-title">Complete Diabetic<br>Care Programme</h2>
+      <p class="section-desc">Holistic diabetes management by Dr. Vinodhini — CMC Vellore Fellowship trained specialist in diabetes care.</p>
+    </div>
+    <div class="diabetic-grid">
+      <div class="dc-card animate delay-1">
+        <span class="dc-icon">🧘</span>
+        <h4>Yoga & Exercise</h4>
+        <p>Personalized exercise and yoga routines designed to help control blood sugar and improve overall fitness.</p>
+      </div>
+      <div class="dc-card animate delay-2">
+        <span class="dc-icon">🩸</span>
+        <h4>Blood Glucose Monitoring</h4>
+        <p>Regular monitoring and tracking with detailed reports to keep your sugar levels in check at all times.</p>
+      </div>
+      <div class="dc-card animate delay-3">
+        <span class="dc-icon">🥗</span>
+        <h4>Balanced Nutrition Diet</h4>
+        <p>Customized diet plans based on your health profile and sugar levels for effective long-term management.</p>
+      </div>
+      <div class="dc-card animate delay-4">
+        <span class="dc-icon">🦶</span>
+        <h4>Specialized Foot Care</h4>
+        <p>Biothesiometry-aided foot care and neuropathy detection — preventing complications before they occur.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHY CHOOSE US ─── -->
+<section id="why">
+  <div class="section-inner">
+    <div class="why-grid">
+      <div>
+        <div class="animate-left">
+          <span class="section-label">Why Choose Us</span>
+          <h2 class="section-title">Quality Results.<br>Trusted Care.</h2>
+          <p class="section-desc" style="margin-bottom: 36px;">We combine advanced technology with compassionate care — making healthcare accessible, reliable, and affordable for Polur.</p>
+        </div>
+        <div class="why-features">
+          <div class="why-item animate-left delay-1">
+            <div class="why-item-icon">🏅</div>
+            <div>
+              <h4>CMC Enrolled Quality Lab</h4>
+              <p>Certified by CMC Vellore — India's top medical institution. Every result meets the highest accuracy standards.</p>
+            </div>
+          </div>
+          <div class="why-item animate-left delay-2">
+            <div class="why-item-icon">⚡</div>
+            <div>
+              <h4>Fast & Accurate Reports</h4>
+              <p>Fully computerized systems ensure quick turnaround with zero manual errors on all diagnostic tests.</p>
+            </div>
+          </div>
+          <div class="why-item animate-left delay-3">
+            <div class="why-item-icon">💰</div>
+            <div>
+              <h4>Affordable for Everyone</h4>
+              <p>Premium quality healthcare at prices the Polur community can afford. Full body check-up from ₹1,800.</p>
+            </div>
+          </div>
+          <div class="why-item animate-left delay-4">
+            <div class="why-item-icon">🏠</div>
+            <div>
+              <h4>Home Sample Collection</h4>
+              <p>Can't come to us? We come to you! Blood sample collection available at your doorstep.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="why-visual animate-right">
+        <div class="why-big-card">
+          <div class="cmcbadge">
+            <i class="fas fa-award"></i>
+            <h4>CMC Enrolled Quality Lab</h4>
+            <p>Christian Medical College, Vellore Certified</p>
+          </div>
+          <div class="pkg-box">
+            <h4>🩺 Full Body Check-up Package</h4>
+            <div class="pkg-price">₹1,800 <span>/ person</span></div>
+            <div class="pkg-features">
+              <div class="pkg-feat"><i class="fas fa-check-circle"></i> Complete Blood Count</div>
+              <div class="pkg-feat"><i class="fas fa-check-circle"></i> Blood Sugar (Fasting & PP)</div>
+              <div class="pkg-feat"><i class="fas fa-check-circle"></i> Cholesterol & Lipid Profile</div>
+              <div class="pkg-feat"><i class="fas fa-check-circle"></i> 12-Channel ECG</div>
+              <div class="pkg-feat"><i class="fas fa-check-circle"></i> Kidney & Liver Function</div>
+              <div class="pkg-feat"><i class="fas fa-check-circle"></i> Doctor Review Included</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIALS ─── -->
+<section id="testimonials">
+  <div class="section-inner">
+    <div class="animate">
+      <span class="section-label">Patient Reviews</span>
+      <h2 class="section-title">Trusted by the<br>Polur Community</h2>
+    </div>
+    <div class="test-grid">
+      <div class="test-card animate delay-1">
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <p>"Dr. Vinodhini is exceptional. Her diabetes management programme completely changed my life. My sugar levels are now under control!"</p>
+        <div class="test-author">
+          <div class="test-av">R</div>
+          <div>
+            <div class="test-name">Rajan Kumar</div>
+            <div class="test-loc">Polur, Tamil Nadu</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card animate delay-2">
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <p>"Very clean and professional lab. Reports are accurate and received quickly. Home collection service is very convenient. Highly recommend DDC!"</p>
+        <div class="test-author">
+          <div class="test-av">M</div>
+          <div>
+            <div class="test-name">Meenakshi S</div>
+            <div class="test-loc">Polur, Tamil Nadu</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card animate delay-3">
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <p>"Full body check-up at ₹1,800 is unbelievable value. CMC quality standards at local prices. Dr. Rashmitha was very patient and caring."</p>
+        <div class="test-author">
+          <div class="test-av">S</div>
+          <div>
+            <div class="test-name">Suresh P</div>
+            <div class="test-loc">Polur, Tamil Nadu</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="animate">
+      <span class="section-label">Find Us</span>
+      <h2 class="section-title">Visit DDC Polur<br>Today</h2>
+      <p class="section-desc">We're conveniently located opposite Arun Theatre, Railway Station Road, Polur.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="contact-card animate-left delay-1">
+          <div class="contact-card-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div>
+            <h4>Address</h4>
+            <p>SSS Complex, Railway Station Road,<br>Opposite Arun Theatre,<br>Polur — 606 803</p>
+          </div>
+        </div>
+        <div class="contact-card animate-left delay-2">
+          <div class="contact-card-icon"><i class="fas fa-phone"></i></div>
+          <div>
+            <h4>Phone Numbers</h4>
+            <p><a href="tel:+919500765006">+91-95007 65006</a><br><a href="tel:041812997790">04181 299779</a></p>
+          </div>
+        </div>
+        <div class="contact-card animate-left delay-3">
+          <div class="contact-card-icon"><i class="fas fa-envelope"></i></div>
+          <div>
+            <h4>Email</h4>
+            <p><a href="mailto:ddcpolur@gmail.com">ddcpolur@gmail.com</a></p>
+          </div>
+        </div>
+        <div class="contact-card animate-left delay-4">
+          <div class="contact-card-icon"><i class="fas fa-clock"></i></div>
+          <div>
+            <h4>Consultation Hours</h4>
+            <p>Morning: 08:00 AM – 02:00 PM (Dr. Rashmitha)<br>Evening: 05:00 PM – 09:00 PM (Dr. Vinodhini)</p>
+          </div>
+        </div>
+      </div>
+      <div class="animate-right">
+        <div class="map-container">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.8!2d79.0!3d12.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52e8b0c0000001%3A0x0!2sPolur%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1234567890"
+            allowfullscreen="" loading="lazy">
+          </iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-band animate">
+      <h3>Ready to Book Your Appointment?</h3>
+      <p>Call us now or WhatsApp — we're happy to help you book a slot or arrange home collection.</p>
+      <div class="cta-btns">
+        <a href="https://wa.me/919500765006?text=Hello%2C%20I%20would%20like%20to%20book%20an%20appointment%20at%20DDC%20Polur" class="btn-call" target="_blank">
+          <i class="fab fa-whatsapp"></i> WhatsApp Us
+        </a>
+        <a href="tel:+919500765006" class="btn-phone">
+          <i class="fas fa-phone"></i> Call: 95007 65006
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="text-decoration:none;">
+          <div class="nav-logo-icon">🏥</div>
+          <div class="nav-logo-text">
+            <span>DDC Polur</span>
+            <span>Diagnostic Centre</span>
+          </div>
+        </a>
+        <p>CMC Enrolled Quality Lab providing trusted diagnostics and expert medical consultation to the Polur community since years.</p>
+      </div>
+      <div class="footer-links">
+        <h5>Services</h5>
+        <ul>
+          <li><a href="#services">Lab Tests</a></li>
+          <li><a href="#services">ECG</a></li>
+          <li><a href="#services">Biothesiometry</a></li>
+          <li><a href="#services">Full Body Check-up</a></li>
+          <li><a href="#services">Home Collection</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h5>Quick Links</h5>
+        <ul>
+          <li><a href="#doctors">Our Doctors</a></li>
+          <li><a href="#diabetic">Diabetic Care</a></li>
+          <li><a href="#testimonials">Reviews</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="tel:+919500765006">Call Now</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="tel:+919500765006">95007 65006</a></li>
+          <li><a href="tel:041812997790">04181 299779</a></li>
+          <li><a href="mailto:ddcpolur@gmail.com">ddcpolur@gmail.com</a></li>
+          <li><a href="#contact">SSS Complex, Polur</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© <span id="year"></span> DDC Polur — Doctor Diagnostic Centre & RR Clinic. All rights reserved.</p>
+      <p>Demo website built by <span>Sri Kumar M</span> | Web Designer, Hosur</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ─── 3D PARTICLE BACKGROUND ───
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.r = Math.random() * 1.5 + 0.3;
+      this.vx = (Math.random() - 0.5) * 0.4;
+      this.vy = (Math.random() - 0.5) * 0.4;
+      this.alpha = Math.random() * 0.4 + 0.1;
+      this.color = Math.random() > 0.5 ? '#00b4d8' : '#0077b6';
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = this.alpha;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+  function connectParticles() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = '#00b4d8';
+          ctx.globalAlpha = (1 - dist / 100) * 0.08;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    connectParticles();
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // ─── NAVBAR ───
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // ─── HAMBURGER ───
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  // ─── SCROLL ANIMATIONS ───
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.animate, .animate-left, .animate-right').forEach(el => observer.observe(el));
+
+  // ─── YEAR ───
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ─── 3D CARD MOUSE TILT ───
+  const card = document.querySelector('.hero-card-3d');
+  if (card) {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = `perspective(1000px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) translateY(-10px)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  }
+</script>
+</body>
+</html>
